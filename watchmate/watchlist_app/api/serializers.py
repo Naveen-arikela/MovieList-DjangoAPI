@@ -1,13 +1,42 @@
 from rest_framework import serializers
 from watchlist_app.models import Movie
 
+#Convert database model objects to python native data type.
+
+#  ╔══════════════════════════════════╗
+# ║        ⚙ Model Serializer ⚙       ║
+#  ╚══════════════════════════════════╝
+
+class MovieSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Movie
+        fields  = '__all__'
+        # fields = ['id', 'name', 'description']
+        # exclude = ['active']
+        # NOTE:: We should not use both at a time exclude and fields
+
+    #Field level validation
+    def validate_name(self, value):
+        if len(value) < 2:
+            raise serializers.ValidationError("Name is too short!")
+        return value
+    
+    #Object level validation
+    def validate(self, data):
+        if data['name'] == data['description']:
+            raise serializers.ValidationError("Title and Description should be different!")
+        return data
+
+
+#  ╔══════════════════════════════════╗
+# ║        ⚙ Serializer ⚙             ║
+#  ╚══════════════════════════════════╝
+
 #Validators function
 def description_length(value):
     if len(value) < 2:
         raise serializers.ValidationError("Description is too short!")
-    
-#Convert database model objects to python native data type.
-class MovieSerializer(serializers.Serializer):
+class MovieSerializer_Serializer(serializers.Serializer):
     id = serializers.IntegerField(read_only=True)
     name = serializers.CharField()
     description = serializers.CharField(validators=[description_length])
