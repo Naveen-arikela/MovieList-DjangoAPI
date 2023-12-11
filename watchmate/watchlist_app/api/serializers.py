@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from watchlist_app.models import WatchList, StreamPlatform
+from watchlist_app.models import WatchList, StreamPlatform, Review
 
 #Convert database model objects to python native data type.
 
@@ -7,12 +7,15 @@ from watchlist_app.models import WatchList, StreamPlatform
 # ║        ⚙ Model Serializer ⚙       ║
 #  ╚══════════════════════════════════╝
 
-class StreamPlatformSerializer(serializers.ModelSerializer):
+class ReviewSerializer(serializers.ModelSerializer):
     class Meta:
-        model = StreamPlatform
+        model = Review
         fields = "__all__"
 
+
 class WatchListSerializer(serializers.ModelSerializer):
+    #reviews defined in models.py
+    reviews = ReviewSerializer(many=True, read_only=True)
     class Meta:
         model = WatchList
         fields = "__all__"
@@ -43,6 +46,17 @@ class WatchListSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Title and Description should be different!")
         return data
     """
+
+class StreamPlatformSerializer(serializers.ModelSerializer):
+    
+    #NESTED SERIALIZER
+    # watchlist defined in models:: related_name="watchlist"
+    watchlist = WatchListSerializer(many=True, read_only=True)
+    class Meta:
+        model = StreamPlatform
+        fields = "__all__"
+
+
 
 #  ╔══════════════════════════════════╗
 # ║        ⚙ Serializer ⚙             ║
