@@ -3,6 +3,7 @@ from .models import Movie
 from django.http import JsonResponse
 
 # Create your views here.
+#NOte::In this DRF we are not using these URLS
 
 def movie_list(request):
     movies = Movie.objects.all()
