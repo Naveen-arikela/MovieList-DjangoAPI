@@ -14,13 +14,29 @@ from rest_framework import (
 # ║        ⚙ Generic Views ⚙          ║
 #  ╚══════════════════════════════════╝
 
-class ReviewList(generics.ListCreateAPIView):
-    queryset = Review.objects.all()
+class ReviewCreate(generics.CreateAPIView):
     serializer_class = ReviewSerializer
+    
+    #We are adding review to particular movie
+    def perform_create(self, serializer):
+        pk = self.kwargs.get('pk')
+        movie = WatchList.objects.get(pk=pk)
+        # print(f"movie:: {movie} | serializer: {serializer}")
+        serializer.save(watchlist=movie)
+class ReviewList(generics.ListAPIView):
+    # queryset = Review.objects.all()
+    serializer_class = ReviewSerializer
+
+    def get_queryset(self):
+        # print(f"get_queryset:: {self.kwargs}")
+        # get_queryset:: {'pk': 1}
+        pk = self.kwargs["pk"]
+        return Review.objects.filter(watchlist=pk)
 
 class ReviewDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
+
 
 #  ╔══════════════════════════════════╗
 # ║           ⚙ MIXINS ⚙              ║
