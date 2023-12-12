@@ -62,12 +62,19 @@ class ReviewList_TEMP(mixins.ListModelMixin, mixins.CreateModelMixin, generics.G
     def post(self, request, *args, **kwargs):
         return self.create(request, *args, **kwargs)
 
+#  ╔══════════════════════════════════╗
+# ║        ⚙ Model ViewSet ⚙          ║
+#  ╚══════════════════════════════════╝
+class StreamPlatformVS(viewsets.ModelViewSet):
+    queryset = StreamPlatform.objects.all()
+    serializer_class = StreamPlatformSerializer
+
 
 #  ╔══════════════════════════════════╗
 # ║          ⚙ ViewSets ⚙             ║
 #  ╚══════════════════════════════════╝
 
-class StreamPlatformVS(viewsets.ViewSet):
+class StreamPlatformVS_TEMP(viewsets.ViewSet):
 
     def list(self, request):
         queryset = StreamPlatform.objects.all()
@@ -80,7 +87,12 @@ class StreamPlatformVS(viewsets.ViewSet):
         serializer = StreamPlatformSerializer(watchlist)
         return Response(serializer.data)
     
-
+    def create(self, request):
+        serializer = StreamPlatformSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors)
 
 #  ╔══════════════════════════════════╗
 # ║      ⚙ Class-Based Views ⚙        ║
