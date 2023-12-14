@@ -1,5 +1,6 @@
 from watchlist_app.api.serializers import WatchListSerializer, StreamPlatformSerializer, ReviewSerializer
 from watchlist_app.models import WatchList, StreamPlatform, Review
+from watchlist_app.api.permissions import ReviewUserOrReadOnly
 
 from django.shortcuts import get_object_or_404
 
@@ -51,6 +52,13 @@ class ReviewList(generics.ListAPIView):
 class ReviewDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
+    """
+    Object Level Permission:
+     1. Readonly access for the non login user
+     2. Write permissions for the login user
+    """
+    permission_classes = [ReviewUserOrReadOnly]
+    
 
 
 #  ╔══════════════════════════════════╗
